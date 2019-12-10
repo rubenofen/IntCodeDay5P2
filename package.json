@@ -2,7 +2,7 @@
   "name": "intcode",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://rubenofen.github.io/int-code-5-1",
+  "homepage": "https://rubenofen.github.io/IntCodeDay5P1",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
