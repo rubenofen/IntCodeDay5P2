@@ -1,0 +1,32 @@
+.read {
+    background-color: greenyellow;
+}
+
+.read_pointer {
+    background-color: aqua;
+}
+
+.write_pointer {
+    background-color: orange;
+}
+
+.current_pointer {
+    background-color: black;
+    color: white;
+}
+
+.write {
+    background-color: red;
+    color: white;
+}
+
+table {
+    border-collapse: collapse;
+}
+td {
+    border: 1px solid black;
+}
+
+.bordered {
+    border-right: 3px solid black;
+}
