@@ -1,29 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import defaultInput from './input';
-import Table from './components/Table';
-import { part1 } from './StatusMachine/IntCode';
+import React, { useState, useEffect } from "react";
+import defaultInput from "./input";
+import Table from "./components/Table";
+import { part1 } from "./StatusMachine/IntCode";
+import useInput from "./useInput";
 
 const iniTable = data =>
   data.map(value => {
-    return { value: parseInt(value), status: '' };
+    return { value: parseInt(value), status: "" };
   });
 
 const resetTable = data => {
-  const newArray = new Array(data.length).fill({ value: '', status: '' });
+  const newArray = new Array(data.length).fill({ value: "", status: "" });
   return newArray.map((value, index) =>
-    data[index] ? { value: data[index].value, status: '' } : value
+    data[index] ? { value: data[index].value, status: "" } : value
   );
 };
 
 function App() {
   const [rawInput, setRawInput] = useState(defaultInput);
-  const [table, setTable] = useState(iniTable(rawInput.split(',')));
+  const [table, setTable] = useState(iniTable(rawInput.split(",")));
   const [currentPointer, setCurrentPointer] = useState(0);
   const [output, setOutput] = useState([]);
-  const [op, setOp] = useState('');
+  const [op, setOp] = useState("");
   const [auto, setAuto] = useState(false);
-  const [speed, setSpeed] = useState(1000);
-  const [tiemoutId, setTiemoutId] = useState('');
+  const [speed, setSpeed] = useInput(1000);
+  const [tiemoutId, setTiemoutId] = useState("");
 
   const executeStep = () => {
     const newStatus = part1(resetTable(table), currentPointer);
@@ -35,13 +36,13 @@ function App() {
   };
 
   useEffect(() => {
-    if (auto && op !== '99') {
+    if (auto && op !== "99") {
       setTiemoutId(setTimeout(executeStep, speed));
     }
   }, [currentPointer, auto]);
 
   const load = input => {
-    setTable(iniTable(input.target.value.split(',')));
+    setTable(iniTable(input.target.value.split(",")));
     setRawInput(input.target.value);
   };
 
@@ -49,24 +50,20 @@ function App() {
     setAuto(input.target.checked);
     if (!input.target.checked) {
       clearTimeout(tiemoutId);
-      setTiemoutId('');
+      setTiemoutId("");
     }
-  };
-
-  const onChangeSpeed = valueSpeed => {
-    setSpeed(valueSpeed.target.value);
   };
 
   return (
     <div className="App">
       <Table input={table} rowElements={30} />
-      <button onClick={executeStep} disabled={op === '99'}>
+      <button onClick={executeStep} disabled={op === "99"}>
         Next step
       </button>
       OP: <span>{op}</span>
       <br />
       Auto: <input type="checkbox" onChange={checkAuto} checked={auto} />
-      Speed: <input type="number" value={speed} onChange={onChangeSpeed} />
+      Speed: <input type="number" value={speed} onChange={setSpeed} />
       <br />
       {output && output.map(value => <div>{value}</div>)}
       INPUT:
