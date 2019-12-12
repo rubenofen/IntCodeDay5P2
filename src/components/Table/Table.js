@@ -29,7 +29,6 @@ const ThThead = ({rowElements}) => {
 }
 
 const Table = ({ input, rowElements }) => {
-    console.log(input);
   return (
     <table>
         <thead>
@@ -37,7 +36,6 @@ const Table = ({ input, rowElements }) => {
         </thead>
       <tbody>
         {input.map((current, index) => {
-            console.log(`current ${current}, index ${index}`)
           if (index % rowElements === 0) {
             return (
               <Row

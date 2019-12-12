@@ -13,40 +13,52 @@ const getOpCodeAndMode = op => {
   const result = [
     opCode,
     mode
-      .split("")
-      .reverse()
-      .join("")
+    .split("")
+    .reverse()
+    .join("")
   ];
-  //console.log(`Op ${result} from ${op}`);
   return result;
 };
 
-const singleMovement = (magicInput, array, position) => {
-    if(!array[position]) array[position] = {};
-  array[position].value = magicInput;
-  array[position].status = statuses.write;
-};
 
-const suma = a => b => (array, position) => {
-  //console.log(`suma: a ${a}, b ${b}, position ${position}`);
-  array[position].value = a + b;
-  array[position].status = statuses.write;
-  //console.log(array[position]);
-};
+const getValue = (array, mode, i) => {
+console.log("TCL: getValue -> mode, i", mode, i)
+  
+  if (typeof mode !== 'undefined' && mode != 0) {
+    console.log("immediate mode");
+    array[i].status = statuses.read;
+    return array[i].value;
+  } else {
+    console.log("position mode");
+    array[i].status = statuses.read_pointer;
+    array[array[i].value].status = statuses.read;
+    return array[array[i].value].value;
+  }
+}
 
-const multi = a => b => (array, position) => {
-  //console.log(`multi: a ${a}, b ${b}, position ${position}`);
-  array[position].value = a * b;
+const write = (input, array, i) => {
+  const position = array[i].value;
+  if (!array[position]) array[position] = {};
+  array[position].value = input;
+  array[i].status = statuses.write_pointer;
   array[position].status = statuses.write;
-  //console.log(array[position]);
-};
+  return i + 1;
+}
+
+const calculate = (op, array, modes, i) => {
+  const operand1 = getValue(array, modes[0], i + 1);
+  const operand2 = getValue(array, modes[1], i + 2);
+  write(op == "01" ? operand1 + operand2 : operand1 * operand2, array, i + 3)
+  return i + 4;
+}
 
 export const part1 = (table, i) => {
   const input = table.concat();
   const returnObject = {
     op: "",
+    nextOp: "",
     output: "",
-    current_pointer: "",
+    current_pointer: 0,
     table: []
   };
 
@@ -56,38 +68,19 @@ export const part1 = (table, i) => {
   returnObject.op = input[i].value.toString();
 
   if (op[0] === "01" || op[0] === "02") {
-    let calculo = op[0] === "01" ? suma : multi;
-    for (let index = 0; index < 2; index++) {
-      const mode = parseInt(op[1][index]);
-      let operand;
-      if (mode) {
-        operand = input[(i += 1)].value;
-        input[i].status = statuses.read;
-      } else {
-        operand = input[input[(i += 1)].value].value;
-        input[i].status = statuses.read_pointer;
-        input[input[i].value].status = statuses.read;
-      }
-      calculo = calculo(operand);
-    }
-    calculo(input, input[(i += 1)].value);
-    input[i].status = statuses.write_pointer;
+    console.log(op);
+    returnObject.current_pointer = calculate(op[0], input, op[1], i);
   }
 
   if (op[0] === "03") {
-      singleMovement(magicInput, input, input[(i += 1)].value);
-      input[i].status = statuses.write_pointer;
+    returnObject.current_pointer = write(magicInput, input, i += 1);
   }
-  if (op[0] === "04")
-    if (op[1][0]) {
-      returnObject.output = input[(i += 1)].value;
-      input[i].status = statuses.read;
-    } else {
-      returnObject.output = input[input[(i += 1)].value].value;
-      input[i].status = statuses.read_pointer;
-      input[input[i].value].status = statuses.read;
-    }
-  returnObject.current_pointer = i + 1;
+  if (op[0] === "04") {
+    returnObject.output = getValue(input, op[1][0], i + 1);
+    returnObject.current_pointer = i + 2;
+  }
+
   returnObject.table = input;
+  returnObject.nextOp = input[returnObject.current_pointer].value;
   return returnObject;
 };
