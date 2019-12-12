@@ -48,32 +48,44 @@ const calculate = (op, array, modes, i) => {
   return i + 4;
 }
 
+const jumpIfTrue = (array, modes, i) => read(array, modes[0], i + 1) ? read(array, modes[1], i + 2) : i + 3
+const jumpIfFalse = (array, modes, i) => !read(array, modes[0], i + 1) ? read(array, modes[1], i + 2) : i + 3
+
+const lessThan = (array, modes, i) => {
+  (read(array, modes[0], i + 1) < read(array, modes[1], i + 2)) ? write(1, array, i + 3): write(0, array, i + 3)
+  return i + 4;
+}
+
+const equals = (array, modes, i) => {
+  (read(array, modes[0], i + 1) === read(array, modes[1], i + 2)) ? write(1, array, i + 3): write(0, array, i + 3)
+  return i + 4;
+}
+
 export const part1 = (table, i) => {
   const input = table.concat();
   const returnObject = {
     op: "",
-    nextOp: "",
     output: "",
     current_pointer: i,
     table: []
   };
 
-  const magicInput = 1;
+  const magicInput = 5;
   const op = getOpCodeAndMode(input[i].value.toString());
   input[i].status = statuses.current_pointer;
   returnObject.op = input[i].value.toString();
 
   if (op[0] === "01" || op[0] === "02") {
     returnObject.current_pointer = calculate(op[0], input, op[1], i);
-  }
-
-  else if (op[0] === "03") {
+  } else if (op[0] === "03") {
     returnObject.current_pointer = write(magicInput, input, i += 1);
-  }
-  else if (op[0] === "04") {
+  } else if (op[0] === "04") {
     returnObject.output = read(input, op[1][0], i + 1);
     returnObject.current_pointer = i + 2;
-  }
+  } else if (op[0] === "05") returnObject.current_pointer = jumpIfTrue(input, op[1], i)
+  else if (op[0] === "06") returnObject.current_pointer = jumpIfFalse(input, op[1], i)
+  else if (op[0] === "07") returnObject.current_pointer = lessThan(input, op[1], i)
+  else if (op[0] === "08") returnObject.current_pointer = equals(input, op[1], i)
 
   returnObject.table = input;
   return returnObject;
