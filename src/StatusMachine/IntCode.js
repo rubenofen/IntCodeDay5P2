@@ -21,15 +21,11 @@ const getOpCodeAndMode = op => {
 };
 
 
-const getValue = (array, mode, i) => {
-console.log("TCL: getValue -> mode, i", mode, i)
-  
-  if (typeof mode !== 'undefined' && mode != 0) {
-    console.log("immediate mode");
+const read = (array, mode, i) => {
+  if (typeof mode !== 'undefined' && mode !== '0') {
     array[i].status = statuses.read;
     return array[i].value;
   } else {
-    console.log("position mode");
     array[i].status = statuses.read_pointer;
     array[array[i].value].status = statuses.read;
     return array[array[i].value].value;
@@ -46,9 +42,9 @@ const write = (input, array, i) => {
 }
 
 const calculate = (op, array, modes, i) => {
-  const operand1 = getValue(array, modes[0], i + 1);
-  const operand2 = getValue(array, modes[1], i + 2);
-  write(op == "01" ? operand1 + operand2 : operand1 * operand2, array, i + 3)
+  const operand1 = read(array, modes[0], i + 1);
+  const operand2 = read(array, modes[1], i + 2);
+  write(op === "01" ? operand1 + operand2 : operand1 * operand2, array, i + 3)
   return i + 4;
 }
 
@@ -58,7 +54,7 @@ export const part1 = (table, i) => {
     op: "",
     nextOp: "",
     output: "",
-    current_pointer: 0,
+    current_pointer: i,
     table: []
   };
 
@@ -68,19 +64,17 @@ export const part1 = (table, i) => {
   returnObject.op = input[i].value.toString();
 
   if (op[0] === "01" || op[0] === "02") {
-    console.log(op);
     returnObject.current_pointer = calculate(op[0], input, op[1], i);
   }
 
-  if (op[0] === "03") {
+  else if (op[0] === "03") {
     returnObject.current_pointer = write(magicInput, input, i += 1);
   }
-  if (op[0] === "04") {
-    returnObject.output = getValue(input, op[1][0], i + 1);
+  else if (op[0] === "04") {
+    returnObject.output = read(input, op[1][0], i + 1);
     returnObject.current_pointer = i + 2;
   }
 
   returnObject.table = input;
-  returnObject.nextOp = input[returnObject.current_pointer].value;
   return returnObject;
 };

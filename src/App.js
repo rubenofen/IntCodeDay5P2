@@ -22,7 +22,6 @@ function App() {
   const [currentPointer, setCurrentPointer] = useState(0);
   const [output, setOutput] = useState([]);
   const [op, setOp] = useState("");
-  const [nextOp, setNextOp] = useState("");
   const [auto, setAuto] = useState(false);
   const [speed, setSpeed] = useInput(1000);
   const [tiemoutId, setTiemoutId] = useState("");
@@ -34,14 +33,13 @@ function App() {
     setCurrentPointer(newStatus.current_pointer);
     setOutput(newOputput);
     setOp(newStatus.op);
-    setNextOp(newStatus.nextOp);
   };
 
   useEffect(() => {
-    if (auto && nextOp !== 99) {
+    if (auto && op !== '99') {
       setTiemoutId(setTimeout(executeStep, speed));
     }
-  }, [currentPointer, auto]);
+  }, [currentPointer, auto, speed, op]);
 
   const load = input => {
     setTable(iniTable(input.target.value.split(",")));

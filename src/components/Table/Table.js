@@ -8,7 +8,7 @@ const Cell = ({ value, className }) => (
 const Row = ({ input, index }) => {
   return (
     <tr>
-      <th>{index}</th>
+      <td className="left-th">{index}</td>
       {input.map((value, index) => (
         <Cell
           className={index % 10 === 9 ? "bordered" : ""}
@@ -23,7 +23,7 @@ const Row = ({ input, index }) => {
 const ThThead = ({rowElements}) => {
     const ths = [];
     for (let i = 0; i <= rowElements; i++) {
-        i?ths.push(<th>{i-1}</th>):ths.push(<th></th>)
+        i?ths.push(<td className="left-th" key={i}>{i-1}</td>):ths.push(<td className="left-th" key={i}></td>)
     }
     return ths;
 }
@@ -31,10 +31,10 @@ const ThThead = ({rowElements}) => {
 const Table = ({ input, rowElements }) => {
   return (
     <table>
-        <thead>
-            <ThThead rowElements={rowElements}/>
-        </thead>
       <tbody>
+        <tr>
+            <ThThead rowElements={rowElements}/>
+        </tr>
         {input.map((current, index) => {
           if (index % rowElements === 0) {
             return (
